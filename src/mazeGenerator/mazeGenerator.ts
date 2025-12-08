@@ -12,118 +12,148 @@ console.assert(HEIGHT % 2 == 1 && HEIGHT >= 3);
 // const NEWLINE = '<br />';
 // const START_TAG = '<pre>';
 // const END_TAG = '</pre>';
-const EMPTY = " ";
-const MARK = "*";
-const WALL = "#";  // Character 9608 is "█"
-const NEWLINE = '\n';
-const START_TAG = '';
-const END_TAG = '';
-const [NORTH, SOUTH, EAST, WEST] = ["n", "s", "e", "w"];
 
-// Create the filled-in maze data structure to start:
-let maze: Maze = {};
-for (let x = 0; x < WIDTH; x++) {
-    for (let y = 0; y < HEIGHT; y++) {
-        maze[`${x},${y}`] = WALL;  // Every space is a wall at first.
-    }
+enum Char {
+    EMPTY = ' ',
+    MARK = '*',
+    WALL = '#',
+    NEWLINE = '\n',
+    START_TAG = '',
+    END_TAG = '',
+}
+
+enum NeighborToThe {
+    NORTH = 'n',
+    SOUTH = 's',
+    EAST = 'e',
+    WEST = 'w',
 }
 
 
+// Create the filled-in maze data structure to start:
 
+
+
+
+
+function createMaze() {
+    let maze: Maze = {};
+    for (let x = 0; x < WIDTH; x++) {
+        for (let y = 0; y < HEIGHT; y++) {
+            maze[`${x},${y}`] = Char.WALL; // Every space is a wall at first.
+        }
+    }
+    return maze;
+}
+
+function getNextUnvisitedNeighbors(unvisitedNeighbors: any[]) {
+    return Math.floor(Math.random() * unvisitedNeighbors.length);
+}
 
 function printMaze(maze: Maze, markX=0, markY=0) {
     // Displays the maze data structure in the maze argument. The
     // markX and markY arguments are coordinates of the current
     // '@' location of the algorithm as it generates the maze.
-    let output = START_TAG;
+    let output: string = Char.START_TAG;
     for (let y = 0; y < HEIGHT; y++) {
         for (let x = 0; x < WIDTH; x++) {
             if (markX === x && markY === y) {
                 // Display the "@" mark here:
-                output += MARK;
+                output += Char.MARK;
             } else {
                 // Display the wall or empty space:
                 output += maze[`${x},${y}`];
             }
         }
-        output += NEWLINE;  // Print a newline after printing the row.
+        output += Char.NEWLINE;  // Print a newline after printing the row.
     }
-    output += END_TAG;
+    output += Char.END_TAG;
     // document.body.innerHTML += output;
     // const element = document.getElementById("mazeGeneratorApp");
     // if (element) element.innerHTML += output;
     return output;
 }
 
-function visit(x: number, y: number) {
-    // "Carve out" empty spaces in the maze at x, y and then
-    // recursively move to neighboring unvisited spaces. This
-    // function backtracks when the mark has reached a dead end.
 
-    maze[`${x},${y}`] = EMPTY;  // "Carve out" the space at x, y.
-    // printMaze(maze, x, y);  // Display the maze as we generate it.
-    // document.body.innerHTML += '<br /><br /><br />';
 
-    while (true) {
-        // Check which neighboring spaces adjacent to
-        // the mark have not been visited already:
-        let unvisitedNeighbors = [];
-        if (y > 1 && !JSON.stringify(hasVisited).includes(JSON.stringify([x, y - 2]))) {
-            unvisitedNeighbors.push(NORTH);
-        }
-        if (y < HEIGHT - 2 &&
-        !JSON.stringify(hasVisited).includes(JSON.stringify([x, y + 2]))) {
-            unvisitedNeighbors.push(SOUTH);
-        }
-        if (x > 1 &&
-        !JSON.stringify(hasVisited).includes(JSON.stringify([x - 2, y]))) {
-            unvisitedNeighbors.push(WEST);
-        }
-        if (x < WIDTH - 2 &&
-        !JSON.stringify(hasVisited).includes(JSON.stringify([x + 2, y]))) {
-            unvisitedNeighbors.push(EAST);
-        }
 
-        if (unvisitedNeighbors.length === 0) {
-            // BASE CASE
-            // All neighboring spaces have been visited, so this is a
-            // dead end. Backtrack to an earlier space:
-            return;
-        } else {
-            // RECURSIVE CASE
-            // Randomly pick an unvisited neighbor to visit:
-            let nextIntersection = unvisitedNeighbors[
-            Math.floor(Math.random() * unvisitedNeighbors.length)];
 
-            // Move the mark to the unvisited neighboring spaces:
-            let nextX = 0, nextY = 0;
-            if (nextIntersection === NORTH) {
-                nextX = x;
-                nextY = y - 2;
-                maze[`${x},${y - 1}`] = EMPTY;  // Connecting hallway.
-            } else if (nextIntersection === SOUTH) {
-                nextX = x;
-                nextY = y + 2;
-                maze[`${x},${y + 1}`] = EMPTY;  // Connecting hallway.
-            } else if (nextIntersection === WEST) {
-                nextX = x - 2;
-                nextY = y;
-                maze[`${x - 1},${y}`] = EMPTY;  // Connecting hallway.
-            } else if (nextIntersection === EAST) {
-                nextX = x + 2;
-                nextY = y;
-                maze[`${x + 1},${y}`] = EMPTY;  // Connecting hallway.
+
+function main() {
+    let maze: Maze = createMaze();
+    let hasVisited = [[1, 1]]; // Start by visiting the top left corner.
+    visit(1, 1);
+
+    return printMaze(maze);
+
+    function visit(x: number, y: number) {
+        // "Carve out" empty spaces in the maze at x, y and then
+        // recursively move to neighboring unvisited spaces. This
+        // function backtracks when the mark has reached a dead end.
+
+        maze[`${x},${y}`] = Char.EMPTY;  // "Carve out" the space at x, y.
+        // printMaze(maze, x, y);  // Display the maze as we generate it.
+        // document.body.innerHTML += '<br /><br /><br />';
+
+        while (true) {
+            // Check which neighboring spaces adjacent to
+            // the mark have not been visited already:
+            let unvisitedNeighbors = [];
+            if (y > 1 && !JSON.stringify(hasVisited).includes(JSON.stringify([x, y - 2]))) {
+                unvisitedNeighbors.push(NeighborToThe.NORTH);
             }
-            hasVisited.push([nextX, nextY]);  // Mark space as visited.
-            visit(nextX, nextY);  // Recursively visit this space.
+            if (y < HEIGHT - 2 &&
+            !JSON.stringify(hasVisited).includes(JSON.stringify([x, y + 2]))) {
+                unvisitedNeighbors.push(NeighborToThe.SOUTH);
+            }
+            if (x > 1 &&
+            !JSON.stringify(hasVisited).includes(JSON.stringify([x - 2, y]))) {
+                unvisitedNeighbors.push(NeighborToThe.WEST);
+            }
+            if (x < WIDTH - 2 &&
+            !JSON.stringify(hasVisited).includes(JSON.stringify([x + 2, y]))) {
+                unvisitedNeighbors.push(NeighborToThe.EAST);
+            }
+
+            if (unvisitedNeighbors.length === 0) {
+                // BASE CASE
+                // All neighboring spaces have been visited, so this is a
+                // dead end. Backtrack to an earlier space:
+                return;
+            } else {
+                // RECURSIVE CASE
+                // Randomly pick an unvisited neighbor to visit:
+                let nextIntersection = unvisitedNeighbors[
+                    getNextUnvisitedNeighbors(unvisitedNeighbors)];
+
+                // Move the mark to the unvisited neighboring spaces:
+                let nextX = 0, nextY = 0;
+                if (nextIntersection === NeighborToThe.NORTH) {
+                    nextX = x;
+                    nextY = y - 2;
+                    maze[`${x},${y - 1}`] = Char.EMPTY;  // Connecting hallway.
+                } else if (nextIntersection === NeighborToThe.SOUTH) {
+                    nextX = x;
+                    nextY = y + 2;
+                    maze[`${x},${y + 1}`] = Char.EMPTY;  // Connecting hallway.
+                } else if (nextIntersection === NeighborToThe.WEST) {
+                    nextX = x - 2;
+                    nextY = y;
+                    maze[`${x - 1},${y}`] = Char.EMPTY;  // Connecting hallway.
+                } else if (nextIntersection === NeighborToThe.EAST) {
+                    nextX = x + 2;
+                    nextY = y;
+                    maze[`${x + 1},${y}`] = Char.EMPTY;  // Connecting hallway.
+                }
+                hasVisited.push([nextX, nextY]);  // Mark space as visited.
+                visit(nextX, nextY);  // Recursively visit this space.
+            }
         }
     }
+
 }
 
 
-// Carve out the paths in the maze data structure:
-let hasVisited = [[1, 1]];  // Start by visiting the top left corner.
-visit(1, 1);
 
-// Display the final resulting maze data structure:
-console.log(printMaze(maze));
+
+console.log(main());
