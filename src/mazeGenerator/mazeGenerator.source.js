@@ -15,15 +15,20 @@ const NEWLINE = '<br />';
 const [NORTH, SOUTH, EAST, WEST] = ["n", "s", "e", "w"];
 
 // Create the filled-in maze data structure to start:
-let maze = {};
+let maze = /** @type {Object.<string, string>} */ ({});
 for (let x = 0; x < WIDTH; x++) {
     for (let y = 0; y < HEIGHT; y++) {
-        maze[[x, y]] = WALL;  // Every space is a wall at first.
+        maze[`${x},${y}`] = WALL;  // Every space is a wall at first.
     }
 }
 
 
 
+/**
+ * @param {{ [x: string]: string; }} maze
+ * @param {number | undefined} [markX]
+ * @param {number | undefined} [markY]
+ */
 function printMaze(maze, markX, markY) {
     // Displays the maze data structure in the maze argument. The
     // markX and markY arguments are coordinates of the current
@@ -36,23 +41,28 @@ function printMaze(maze, markX, markY) {
                 output += MARK;
             } else {
                 // Display the wall or empty space:
-                output += maze[[x, y]];
+                output += maze[`${x},${y}`];
             }
         }
         output += NEWLINE;  // Print a newline after printing the row.
     }
     output += '</pre>';
     // document.body.innerHTML += output;
-    document.getElementById("mazeGeneratorApp").innerHTML += output
+    const element = document.getElementById("mazeGeneratorApp");
+    if (element) element.innerHTML += output;
 }
 
 
+/**
+ * @param {number} x
+ * @param {number} y
+ */
 function visit(x, y) {
     // "Carve out" empty spaces in the maze at x, y and then
     // recursively move to neighboring unvisited spaces. This
     // function backtracks when the mark has reached a dead end.
 
-    maze[[x, y]] = EMPTY;  // "Carve out" the space at x, y.
+    maze[`${x},${y}`] = EMPTY;  // "Carve out" the space at x, y.
     printMaze(maze, x, y);  // Display the maze as we generate it.
     // document.body.innerHTML += '<br /><br /><br />';
 
@@ -88,23 +98,23 @@ function visit(x, y) {
             Math.floor(Math.random() * unvisitedNeighbors.length)];
 
             // Move the mark to the unvisited neighboring spaces:
-            let nextX, nextY;
+            let nextX = 0, nextY = 0;
             if (nextIntersection === NORTH) {
                 nextX = x;
                 nextY = y - 2;
-                maze[[x, y - 1]] = EMPTY;  // Connecting hallway.
+                maze[`${x},${y - 1}`] = EMPTY;  // Connecting hallway.
             } else if (nextIntersection === SOUTH) {
                 nextX = x;
                 nextY = y + 2;
-                maze[[x, y + 1]] = EMPTY;  // Connecting hallway.
+                maze[`${x},${y + 1}`] = EMPTY;  // Connecting hallway.
             } else if (nextIntersection === WEST) {
                 nextX = x - 2;
                 nextY = y;
-                maze[[x - 1, y]] = EMPTY;  // Connecting hallway.
+                maze[`${x - 1},${y}`] = EMPTY;  // Connecting hallway.
             } else if (nextIntersection === EAST) {
                 nextX = x + 2;
                 nextY = y;
-                maze[[x + 1, y]] = EMPTY;  // Connecting hallway.
+                maze[`${x + 1},${y}`] = EMPTY;  // Connecting hallway.
             }
             hasVisited.push([nextX, nextY]);  // Mark space as visited.
             visit(nextX, nextY);  // Recursively visit this space.
