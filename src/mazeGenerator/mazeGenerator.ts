@@ -34,17 +34,17 @@ enum NeighborToThe {
 // Create the filled-in maze data structure to start:
 
 
-
+function getXyFromIndex(i: number){
+  return [i % WIDTH, Math.floor(i / WIDTH)]
+}
 
 
 function createMaze() {
-    let maze: Maze = {};
-    for (let x = 0; x < WIDTH; x++) {
-        for (let y = 0; y < HEIGHT; y++) {
-            maze[`${x},${y}`] = Char.WALL; // Every space is a wall at first.
-        }
-    }
-    return maze;
+  let maze: Maze = {};
+  for (let i = 0; i < WIDTH * HEIGHT; i++) {
+    maze[`${getXyFromIndex(i)}`] = Char.WALL; // Every space is a wall at first.
+  }
+  return maze;
 }
 
 
