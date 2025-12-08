@@ -10,10 +10,14 @@ console.assert(HEIGHT % 2 == 1 && HEIGHT >= 3);
 // const MARK = "@";
 // const WALL = "&#9608;";  // Character 9608 is "█"
 // const NEWLINE = '<br />';
-const EMPTY = "&nbsp;";
+// const START_TAG = '<pre>';
+// const END_TAG = '</pre>';
+const EMPTY = " ";
 const MARK = "*";
 const WALL = "#";  // Character 9608 is "█"
-const NEWLINE = '<br />';
+const NEWLINE = '\n';
+const START_TAG = '';
+const END_TAG = '';
 const [NORTH, SOUTH, EAST, WEST] = ["n", "s", "e", "w"];
 
 // Create the filled-in maze data structure to start:
@@ -26,11 +30,12 @@ for (let x = 0; x < WIDTH; x++) {
 
 
 
+
 function printMaze(maze: Maze, markX=0, markY=0) {
     // Displays the maze data structure in the maze argument. The
     // markX and markY arguments are coordinates of the current
     // '@' location of the algorithm as it generates the maze.
-    let output = '<pre>';
+    let output = START_TAG;
     for (let y = 0; y < HEIGHT; y++) {
         for (let x = 0; x < WIDTH; x++) {
             if (markX === x && markY === y) {
@@ -43,10 +48,11 @@ function printMaze(maze: Maze, markX=0, markY=0) {
         }
         output += NEWLINE;  // Print a newline after printing the row.
     }
-    output += '</pre>';
+    output += END_TAG;
     // document.body.innerHTML += output;
-    const element = document.getElementById("mazeGeneratorApp");
-    if (element) element.innerHTML += output;
+    // const element = document.getElementById("mazeGeneratorApp");
+    // if (element) element.innerHTML += output;
+    return output;
 }
 
 function visit(x: number, y: number) {
@@ -55,7 +61,7 @@ function visit(x: number, y: number) {
     // function backtracks when the mark has reached a dead end.
 
     maze[`${x},${y}`] = EMPTY;  // "Carve out" the space at x, y.
-    printMaze(maze, x, y);  // Display the maze as we generate it.
+    // printMaze(maze, x, y);  // Display the maze as we generate it.
     // document.body.innerHTML += '<br /><br /><br />';
 
     while (true) {
@@ -120,4 +126,4 @@ let hasVisited = [[1, 1]];  // Start by visiting the top left corner.
 visit(1, 1);
 
 // Display the final resulting maze data structure:
-printMaze(maze);
+console.log(printMaze(maze));

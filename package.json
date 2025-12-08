@@ -5,7 +5,8 @@
     "test": "node --import tsx --test ./**/*.test.ts",
     "start": "node --import tsx ./src/index.ts",
     "nodemon": "nodemon",
-    "tsc": "tsc --noEmit --watch --preserveWatchOutput"
+    "tsc": "tsc --noEmit --watch --preserveWatchOutput",
+    "start:mazeGen": "node --import tsx ./src/mazeGenerator/mazeGenerator.ts"
   },
   "devDependencies": {
     "@types/node": "*",
