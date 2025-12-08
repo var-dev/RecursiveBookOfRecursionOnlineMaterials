@@ -1,4 +1,5 @@
 type Maze = Record<string, string>
+type Coordinates = [x: number, y: number]
 
 const WIDTH = 39;  // Width of the maze (must be odd).
 const HEIGHT = 19;  // Height of the maze (must be odd).
@@ -74,7 +75,7 @@ function printMaze(maze: Maze, markX=0, markY=0) {
 
 export class MazeGenerator{
   maze: Maze = createMaze();
-  hasVisited = [[1, 1]]; // Start by visiting the top left corner.
+  hasVisited: Array<Coordinates> = [[1, 1]]; // Start by visiting the top left corner.
   generate(): string {
     this.visit(1, 1);
     return printMaze(this.maze);
@@ -98,19 +99,16 @@ export class MazeGenerator{
       // Check which neighboring spaces adjacent to
       // the mark have not been visited already:
       let unvisitedNeighbors = [];
-      if (y > 1 && !JSON.stringify(this.hasVisited).includes(JSON.stringify([x, y - 2]))) {
+      if (y > 1 && !this.isNeighborAtVisited([x, y - 2])) {
         unvisitedNeighbors.push(NeighborToThe.NORTH);
       }
-      if (y < HEIGHT - 2 &&
-        !JSON.stringify(this.hasVisited).includes(JSON.stringify([x, y + 2]))) {
+      if (y < HEIGHT - 2 && !this.isNeighborAtVisited([x, y + 2])) {
         unvisitedNeighbors.push(NeighborToThe.SOUTH);
       }
-      if (x > 1 &&
-        !JSON.stringify(this.hasVisited).includes(JSON.stringify([x - 2, y]))) {
+      if (x > 1 && !this.isNeighborAtVisited([x - 2, y])) {
         unvisitedNeighbors.push(NeighborToThe.WEST);
       }
-      if (x < WIDTH - 2 &&
-        !JSON.stringify(this.hasVisited).includes(JSON.stringify([x + 2, y]))) {
+      if (x < WIDTH - 2 && !this.isNeighborAtVisited([x + 2, y])) {
         unvisitedNeighbors.push(NeighborToThe.EAST);
       }
 
@@ -148,6 +146,10 @@ export class MazeGenerator{
         this.visit(nextX, nextY);  // Recursively visit this space.
       }
     }
+  }
+
+  private isNeighborAtVisited(coordinates: Coordinates) {
+    return JSON.stringify(this.hasVisited).includes(JSON.stringify(coordinates));
   }
 }
 
