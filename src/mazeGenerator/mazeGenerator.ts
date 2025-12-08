@@ -1,4 +1,4 @@
-type Maze = Record<string, string>
+type Maze = Map<string, string>
 type Coordinates = [x: number, y: number]
 
 const WIDTH = 39;  // Width of the maze (must be odd).
@@ -40,9 +40,9 @@ function getXyFromIndex(i: number){
 
 
 function createMaze() {
-  let maze: Maze = {};
+  let maze: Maze = new Map();
   for (let i = 0; i < WIDTH * HEIGHT; i++) {
-    maze[`${getXyFromIndex(i)}`] = Char.WALL; // Every space is a wall at first.
+    maze.set(`${getXyFromIndex(i)}`, Char.WALL); // Every space is a wall at first.
   }
   return maze;
 }
@@ -60,7 +60,7 @@ function printMaze(maze: Maze, markX=0, markY=0) {
                 output += Char.MARK;
             } else {
                 // Display the wall or empty space:
-                output += maze[`${x},${y}`];
+                output += maze.get(`${x},${y}`);
             }
         }
         output += Char.NEWLINE;  // Print a newline after printing the row.
@@ -91,7 +91,7 @@ export class MazeGenerator{
     // recursively move to neighboring unvisited spaces. This
     // function backtracks when the mark has reached a dead end.
 
-    this.maze[`${x},${y}`] = Char.EMPTY;  // "Carve out" the space at x, y.
+    this.maze.set(`${x},${y}`, Char.EMPTY);  // "Carve out" the space at x, y.
     // printMaze(maze, x, y);  // Display the maze as we generate it.
     // document.body.innerHTML += '<br /><br /><br />';
 
@@ -128,19 +128,19 @@ export class MazeGenerator{
         if (nextIntersection === NeighborToThe.NORTH) {
           nextX = x;
           nextY = y - 2;
-          this.maze[`${x},${y - 1}`] = Char.EMPTY;  // Connecting hallway.
+          this.maze.set(`${x},${y - 1}`, Char.EMPTY);  // Connecting hallway.
         } else if (nextIntersection === NeighborToThe.SOUTH) {
           nextX = x;
           nextY = y + 2;
-          this.maze[`${x},${y + 1}`] = Char.EMPTY;  // Connecting hallway.
+          this.maze.set(`${x},${y + 1}`, Char.EMPTY);  // Connecting hallway.
         } else if (nextIntersection === NeighborToThe.WEST) {
           nextX = x - 2;
           nextY = y;
-          this.maze[`${x - 1},${y}`] = Char.EMPTY;  // Connecting hallway.
+          this.maze.set(`${x - 1},${y}`, Char.EMPTY);  // Connecting hallway.
         } else if (nextIntersection === NeighborToThe.EAST) {
           nextX = x + 2;
           nextY = y;
-          this.maze[`${x + 1},${y}`] = Char.EMPTY;  // Connecting hallway.
+          this.maze.set(`${x + 1},${y}`, Char.EMPTY);  // Connecting hallway.
         }
         this.hasVisited.push([nextX, nextY]);  // Mark space as visited.
         this.visit(nextX, nextY);  // Recursively visit this space.
