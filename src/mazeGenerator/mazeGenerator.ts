@@ -46,9 +46,6 @@ function createMaze() {
     return maze;
 }
 
-function getNextUnvisitedNeighbors(unvisitedNeighbors: any[]) {
-    return Math.floor(Math.random() * unvisitedNeighbors.length);
-}
 
 function printMaze(maze: Maze, markX=0, markY=0) {
     // Displays the maze data structure in the maze argument. The
@@ -75,13 +72,19 @@ function printMaze(maze: Maze, markX=0, markY=0) {
 }
 
 
-class MazeGenerator{
+export class MazeGenerator{
   maze: Maze = createMaze();
   hasVisited = [[1, 1]]; // Start by visiting the top left corner.
   generate(): string {
     this.visit(1, 1);
     return printMaze(this.maze);
   }
+
+  getNextUnvisitedNeighbor(length: number) {
+    const result = Math.floor(Math.random() * length);
+    return result;
+}
+
   visit(x: number, y: number) {
     // "Carve out" empty spaces in the maze at x, y and then
     // recursively move to neighboring unvisited spaces. This
@@ -120,7 +123,7 @@ class MazeGenerator{
         // RECURSIVE CASE
         // Randomly pick an unvisited neighbor to visit:
         let nextIntersection = unvisitedNeighbors[
-          getNextUnvisitedNeighbors(unvisitedNeighbors)];
+          this.getNextUnvisitedNeighbor(unvisitedNeighbors.length)];
 
         // Move the mark to the unvisited neighboring spaces:
         let nextX = 0, nextY = 0;
@@ -149,4 +152,5 @@ class MazeGenerator{
 }
 
 
-console.log((new MazeGenerator()).generate());
+// aMaze.getNextUnvisitedNeighbor = getNextUnvisitedNeighborMock
+console.log(new MazeGenerator().generate());
