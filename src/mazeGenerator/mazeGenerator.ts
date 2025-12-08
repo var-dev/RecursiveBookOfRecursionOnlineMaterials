@@ -153,7 +153,11 @@ function main() {
 
 }
 
+class MazeGenerator{
+    generate(): string {
+        return main();
+    }
+}
 
 
-
-console.log(main());
+console.log((new MazeGenerator()).generate());
