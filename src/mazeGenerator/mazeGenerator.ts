@@ -30,6 +30,53 @@ enum NeighborToThe {
     WEST = 'w',
 }
 
+interface UnvisitedNeighbor {
+  action(x: number, y: number): void;
+}
+class UnvisitedNeighborNorth implements UnvisitedNeighbor {
+  private nextX = 0;
+  private nextY = 0;
+  constructor(private mazeGenerator: MazeGenerator) { }
+  action(x: number, y: number): void {
+    this.nextX = x;
+    this.nextY = y - 2;
+    this.mazeGenerator.maze.set(getIndexFromXy(x, y - 1), Char.EMPTY);  // Connecting hallway.
+    this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
+  }
+}
+class UnvisitedNeighborSouth implements UnvisitedNeighbor {
+  private nextX = 0;
+  private nextY = 0;
+  constructor(private mazeGenerator: MazeGenerator) { }
+  action(x: number, y: number): void {
+    this.nextX = x;
+    this.nextY = y + 2;
+    this.mazeGenerator.maze.set(getIndexFromXy(x, y + 1), Char.EMPTY);  // Connecting hallway.
+    this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
+  }
+}
+class UnvisitedNeighborEast implements UnvisitedNeighbor {
+  private nextX = 0;
+  private nextY = 0;
+  constructor(private mazeGenerator: MazeGenerator) { }
+  action(x: number, y: number): void {
+    this.nextX = x + 2;
+    this.nextY = y;
+    this.mazeGenerator.maze.set(getIndexFromXy(x + 1, y), Char.EMPTY);  // Connecting hallway.
+    this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
+  }
+}
+class UnvisitedNeighborWest implements UnvisitedNeighbor {
+  private nextX = 0;
+  private nextY = 0;
+  constructor(private mazeGenerator: MazeGenerator) { }
+  action(x: number, y: number): void {
+    this.nextX = x - 2;
+    this.nextY = y;
+    this.mazeGenerator.maze.set(getIndexFromXy(x - 1, y), Char.EMPTY);  // Connecting hallway.
+    this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
+  }
+}
 
 function arraysEqual(a: any[], b: any[]) {
   if (a.length !== b.length) return false;
