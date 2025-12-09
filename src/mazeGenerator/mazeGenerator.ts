@@ -31,50 +31,58 @@ enum NeighborToThe {
 }
 
 interface UnvisitedNeighbor {
-  action(x: number, y: number): void;
+  action(x: number, y: number): Coordinates;
 }
 class UnvisitedNeighborNorth implements UnvisitedNeighbor {
   private nextX = 0;
   private nextY = 0;
   constructor(private mazeGenerator: MazeGenerator) { }
-  action(x: number, y: number): void {
+  action(x: number, y: number): Coordinates {
     this.nextX = x;
     this.nextY = y - 2;
     this.mazeGenerator.maze.set(getIndexFromXy(x, y - 1), Char.EMPTY);  // Connecting hallway.
     this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
+
+    return [this.nextX, this.nextY]
   }
 }
 class UnvisitedNeighborSouth implements UnvisitedNeighbor {
   private nextX = 0;
   private nextY = 0;
   constructor(private mazeGenerator: MazeGenerator) { }
-  action(x: number, y: number): void {
+  action(x: number, y: number): Coordinates {
     this.nextX = x;
     this.nextY = y + 2;
     this.mazeGenerator.maze.set(getIndexFromXy(x, y + 1), Char.EMPTY);  // Connecting hallway.
     this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
+
+    return [this.nextX, this.nextY]
   }
 }
 class UnvisitedNeighborEast implements UnvisitedNeighbor {
   private nextX = 0;
   private nextY = 0;
   constructor(private mazeGenerator: MazeGenerator) { }
-  action(x: number, y: number): void {
+  action(x: number, y: number): Coordinates {
     this.nextX = x + 2;
     this.nextY = y;
     this.mazeGenerator.maze.set(getIndexFromXy(x + 1, y), Char.EMPTY);  // Connecting hallway.
     this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
+
+    return [this.nextX, this.nextY]
   }
 }
 class UnvisitedNeighborWest implements UnvisitedNeighbor {
   private nextX = 0;
   private nextY = 0;
   constructor(private mazeGenerator: MazeGenerator) { }
-  action(x: number, y: number): void {
+  action(x: number, y: number): Coordinates {
     this.nextX = x - 2;
     this.nextY = y;
     this.mazeGenerator.maze.set(getIndexFromXy(x - 1, y), Char.EMPTY);  // Connecting hallway.
     this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
+
+    return [this.nextX, this.nextY]
   }
 }
 
@@ -150,18 +158,18 @@ export class MazeGenerator{
     while (true) {
       // Check which neighboring spaces adjacent to
       // the mark have not been visited already:
-      let unvisitedNeighbors = [];
+      let unvisitedNeighbors: UnvisitedNeighbor[] = [];
       if (y > 1 && !this.isNeighborAtVisited([x, y - 2])) {
-        unvisitedNeighbors.push(NeighborToThe.NORTH);
+        unvisitedNeighbors.push(new UnvisitedNeighborNorth(this));
       }
       if (y < HEIGHT - 2 && !this.isNeighborAtVisited([x, y + 2])) {
-        unvisitedNeighbors.push(NeighborToThe.SOUTH);
+        unvisitedNeighbors.push(new UnvisitedNeighborSouth(this));
       }
       if (x > 1 && !this.isNeighborAtVisited([x - 2, y])) {
-        unvisitedNeighbors.push(NeighborToThe.WEST);
+        unvisitedNeighbors.push(new UnvisitedNeighborWest(this));
       }
       if (x < WIDTH - 2 && !this.isNeighborAtVisited([x + 2, y])) {
-        unvisitedNeighbors.push(NeighborToThe.EAST);
+        unvisitedNeighbors.push(new UnvisitedNeighborEast(this));
       }
 
       if (unvisitedNeighbors.length === 0) {
@@ -174,27 +182,7 @@ export class MazeGenerator{
         // Randomly pick an unvisited neighbor to visit:
         let nextIntersection = unvisitedNeighbors[
           this.getNextUnvisitedNeighbor(unvisitedNeighbors.length)];
-
-        // Move the mark to the unvisited neighboring spaces:
-        let nextX = 0, nextY = 0;
-        if (nextIntersection === NeighborToThe.NORTH) {
-          nextX = x;
-          nextY = y - 2;
-          this.maze.set(getIndexFromXy(x, y - 1), Char.EMPTY);  // Connecting hallway.
-        } else if (nextIntersection === NeighborToThe.SOUTH) {
-          nextX = x;
-          nextY = y + 2;
-          this.maze.set(getIndexFromXy(x, y + 1), Char.EMPTY);  // Connecting hallway.
-        } else if (nextIntersection === NeighborToThe.WEST) {
-          nextX = x - 2;
-          nextY = y;
-          this.maze.set(getIndexFromXy(x - 1, y), Char.EMPTY);  // Connecting hallway.
-        } else if (nextIntersection === NeighborToThe.EAST) {
-          nextX = x + 2;
-          nextY = y;
-          this.maze.set(getIndexFromXy(x + 1, y), Char.EMPTY);  // Connecting hallway.
-        }
-        this.hasVisited.push([nextX, nextY]);  // Mark space as visited.
+        let [nextX, nextY] = nextIntersection!.action(x, y);
         this.visit(nextX, nextY);  // Recursively visit this space.
       }
     }
