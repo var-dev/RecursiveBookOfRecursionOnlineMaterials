@@ -1,3 +1,4 @@
+type Cell = [number, string]
 type Maze = Map<number, string>
 type Coordinates = [x: number, y: number]
 
@@ -100,24 +101,22 @@ function createMaze() {
   return maze;
 }
 
-
 function printMaze(maze: Maze, markX=0, markY=0) {
     // Displays the maze data structure in the maze argument. The
     // markX and markY arguments are coordinates of the current
     // '@' location of the algorithm as it generates the maze.
     let output: string = Char.START_TAG;
-    for (let y = 0; y < HEIGHT; y++) {
-        for (let x = 0; x < WIDTH; x++) {
-            if (markX === x && markY === y) {
-                // Display the "@" mark here:
-                output += Char.MARK;
-            } else {
-                // Display the wall or empty space:
-                output += maze.get(calculateIndexFromXy(x,y));
-            }
-        }
+     maze.entries().forEach((cell: Cell) => {
+      const [x, y] = calculateCoordinatesFromIndex(cell[0])
+      if (markX === x && markY === y) {
+        output += Char.MARK;    // Display the "@" mark here:
+      } else {
+        output += maze.get(calculateIndexFromXy(x,y)); // Display the wall or empty space:
+      }
+      if (x === WIDTH - 1) {
         output += Char.NEWLINE;  // Print a newline after printing the row.
-    }
+      }
+    })
     output += Char.END_TAG;
     // document.body.innerHTML += output;
     // const element = document.getElementById("mazeGeneratorApp");
