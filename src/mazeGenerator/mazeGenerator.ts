@@ -23,13 +23,6 @@ enum Char {
     END_TAG = '',
 }
 
-enum NeighborToThe {
-    NORTH = 'n',
-    SOUTH = 's',
-    EAST = 'e',
-    WEST = 'w',
-}
-
 interface UnvisitedNeighbor {
   action(x: number, y: number): Coordinates;
 }
@@ -40,7 +33,7 @@ class UnvisitedNeighborNorth implements UnvisitedNeighbor {
   action(x: number, y: number): Coordinates {
     this.nextX = x;
     this.nextY = y - 2;
-    this.mazeGenerator.maze.set(getIndexFromXy(x, y - 1), Char.EMPTY);  // Connecting hallway.
+    this.mazeGenerator.maze.set(calculateIndexFromXy(x, y - 1), Char.EMPTY);  // Connecting hallway.
     this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
 
     return [this.nextX, this.nextY]
@@ -53,7 +46,7 @@ class UnvisitedNeighborSouth implements UnvisitedNeighbor {
   action(x: number, y: number): Coordinates {
     this.nextX = x;
     this.nextY = y + 2;
-    this.mazeGenerator.maze.set(getIndexFromXy(x, y + 1), Char.EMPTY);  // Connecting hallway.
+    this.mazeGenerator.maze.set(calculateIndexFromXy(x, y + 1), Char.EMPTY);  // Connecting hallway.
     this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
 
     return [this.nextX, this.nextY]
@@ -66,7 +59,7 @@ class UnvisitedNeighborEast implements UnvisitedNeighbor {
   action(x: number, y: number): Coordinates {
     this.nextX = x + 2;
     this.nextY = y;
-    this.mazeGenerator.maze.set(getIndexFromXy(x + 1, y), Char.EMPTY);  // Connecting hallway.
+    this.mazeGenerator.maze.set(calculateIndexFromXy(x + 1, y), Char.EMPTY);  // Connecting hallway.
     this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
 
     return [this.nextX, this.nextY]
@@ -79,7 +72,7 @@ class UnvisitedNeighborWest implements UnvisitedNeighbor {
   action(x: number, y: number): Coordinates {
     this.nextX = x - 2;
     this.nextY = y;
-    this.mazeGenerator.maze.set(getIndexFromXy(x - 1, y), Char.EMPTY);  // Connecting hallway.
+    this.mazeGenerator.maze.set(calculateIndexFromXy(x - 1, y), Char.EMPTY);  // Connecting hallway.
     this.mazeGenerator.hasVisited.push([this.nextX, this.nextY]);  // Mark space as visited.
 
     return [this.nextX, this.nextY]
@@ -91,11 +84,11 @@ function arraysEqual(a: any[], b: any[]) {
   return a.every((val, i) => val === b[i]);
 }
 
-function getXyFromIndex(i: number){
+function calculateCoordinatesFromIndex(i: number): Coordinates {
   return [i % WIDTH, Math.floor(i / WIDTH)]
 }
 
-function getIndexFromXy(x: number, y: number){
+function calculateIndexFromXy(x: number, y: number){
   return y * WIDTH + x
 }
 
@@ -120,7 +113,7 @@ function printMaze(maze: Maze, markX=0, markY=0) {
                 output += Char.MARK;
             } else {
                 // Display the wall or empty space:
-                output += maze.get(getIndexFromXy(x,y));
+                output += maze.get(calculateIndexFromXy(x,y));
             }
         }
         output += Char.NEWLINE;  // Print a newline after printing the row.
@@ -151,7 +144,7 @@ export class MazeGenerator{
     // recursively move to neighboring unvisited spaces. This
     // function backtracks when the mark has reached a dead end.
 
-    this.maze.set(getIndexFromXy(x, y), Char.EMPTY);  // "Carve out" the space at x, y.
+    this.maze.set(calculateIndexFromXy(x, y), Char.EMPTY);  // "Carve out" the space at x, y.
     // printMaze(maze, x, y);  // Display the maze as we generate it.
     // document.body.innerHTML += '<br /><br /><br />';
 
@@ -159,16 +152,16 @@ export class MazeGenerator{
       // Check which neighboring spaces adjacent to
       // the mark have not been visited already:
       let unvisitedNeighbors: UnvisitedNeighbor[] = [];
-      if (y > 1 && !this.isNeighborAtVisited([x, y - 2])) {
+      if (this.isNorthNeighborExpectingVisit(y, x)) {
         unvisitedNeighbors.push(new UnvisitedNeighborNorth(this));
       }
-      if (y < HEIGHT - 2 && !this.isNeighborAtVisited([x, y + 2])) {
+      if (this.isSouthNeighborExpectingVisit(y, x)) {
         unvisitedNeighbors.push(new UnvisitedNeighborSouth(this));
       }
-      if (x > 1 && !this.isNeighborAtVisited([x - 2, y])) {
+      if (this.isWestNeighborExpectingVisit(x, y)) {
         unvisitedNeighbors.push(new UnvisitedNeighborWest(this));
       }
-      if (x < WIDTH - 2 && !this.isNeighborAtVisited([x + 2, y])) {
+      if (this.isEastNeighborExpectingVisit(x, y)) {
         unvisitedNeighbors.push(new UnvisitedNeighborEast(this));
       }
 
@@ -186,6 +179,22 @@ export class MazeGenerator{
         this.visit(nextX, nextY);  // Recursively visit this space.
       }
     }
+  }
+
+  private isEastNeighborExpectingVisit(x: number, y: number) {
+    return x < WIDTH - 2 && !this.isNeighborAtVisited([x + 2, y]);
+  }
+
+  private isWestNeighborExpectingVisit(x: number, y: number) {
+    return x > 1 && !this.isNeighborAtVisited([x - 2, y]);
+  }
+
+  private isSouthNeighborExpectingVisit(y: number, x: number) {
+    return y < HEIGHT - 2 && !this.isNeighborAtVisited([x, y + 2]);
+  }
+
+  private isNorthNeighborExpectingVisit(y: number, x: number) {
+    return y > 1 && !this.isNeighborAtVisited([x, y - 2]);
   }
 
   private isNeighborAtVisited(coordinates: Coordinates) {
