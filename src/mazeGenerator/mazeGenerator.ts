@@ -101,28 +101,6 @@ function createMaze() {
   return maze;
 }
 
-function printMaze(maze: Maze, markX=0, markY=0) {
-    // Displays the maze data structure in the maze argument. The
-    // markX and markY arguments are coordinates of the current
-    // '@' location of the algorithm as it generates the maze.
-    let output: string = Char.START_TAG;
-     maze.entries().forEach((cell: Cell) => {
-      const [x, y] = calculateCoordinatesFromIndex(cell[0])
-      if (markX === x && markY === y) {
-        output += Char.MARK;    // Display the "@" mark here:
-      } else {
-        output += maze.get(calculateIndexFromXy(x,y)); // Display the wall or empty space:
-      }
-      if (x === WIDTH - 1) {
-        output += Char.NEWLINE;  // Print a newline after printing the row.
-      }
-    })
-    output += Char.END_TAG;
-    // document.body.innerHTML += output;
-    // const element = document.getElementById("mazeGeneratorApp");
-    // if (element) element.innerHTML += output;
-    return output;
-}
 
 
 export class MazeGenerator{
@@ -130,7 +108,7 @@ export class MazeGenerator{
   hasVisited: Array<Coordinates> = [[1, 1]]; // Start by visiting the top left corner.
   generate(): string {
     this.visit(1, 1);
-    return printMaze(this.maze);
+    return this.printMaze();
   }
 
   getNextUnvisitedNeighbor(length: number) {
@@ -198,6 +176,28 @@ export class MazeGenerator{
 
   private isNeighborAtVisited(coordinates: Coordinates) {
     return this.hasVisited.some((c: Coordinates) => arraysEqual(c, coordinates));
+  }
+  printMaze(markX=0, markY=0) {
+    // Displays the maze data structure in the maze argument. The
+    // markX and markY arguments are coordinates of the current
+    // '@' location of the algorithm as it generates the maze.
+    let output: string = Char.START_TAG;
+    this.maze.entries().forEach((cell: Cell) => {
+      const [x, y] = calculateCoordinatesFromIndex(cell[0])
+      if (markX === x && markY === y) {
+        output += Char.MARK;    // Display the "@" mark here:
+      } else {
+        output += this.maze.get(calculateIndexFromXy(x,y)); // Display the wall or empty space:
+      }
+      if (x === WIDTH - 1) {
+        output += Char.NEWLINE;  // Print a newline after printing the row.
+      }
+    })
+    output += Char.END_TAG;
+    // document.body.innerHTML += output;
+    // const element = document.getElementById("mazeGeneratorApp");
+    // if (element) element.innerHTML += output;
+    return output;
   }
 }
 
