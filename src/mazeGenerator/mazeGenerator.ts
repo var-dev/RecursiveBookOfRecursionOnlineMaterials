@@ -104,17 +104,18 @@ function createMaze() {
 
 
 export class MazeGenerator{
-  maze: Maze = createMaze();
-  hasVisited: Array<Coordinates> = [[1, 1]]; // Start by visiting the top left corner.
-  generate(): string {
+  maze: Maze 
+  hasVisited: Array<Coordinates> 
+  constructor() { 
+    this.maze = createMaze();
+    this.hasVisited = [[1, 1]]; // Start by visiting the top left corner.
     this.visit(1, 1);
-    return this.printMaze();
   }
 
   getNextUnvisitedNeighbor(length: number) {
     const result = Math.floor(Math.random() * length);
     return result;
-}
+  }
 
   visit(x: number, y: number) {
     // "Carve out" empty spaces in the maze at x, y and then
@@ -129,6 +130,7 @@ export class MazeGenerator{
       // Check which neighboring spaces adjacent to
       // the mark have not been visited already:
       let unvisitedNeighbors: UnvisitedNeighbor[] = [];
+      
       if (this.isNorthNeighborExpectingVisit(y, x)) {
         unvisitedNeighbors.push(new UnvisitedNeighborNorth(this));
       }
@@ -203,4 +205,4 @@ export class MazeGenerator{
 
 
 // aMaze.getNextUnvisitedNeighbor = getNextUnvisitedNeighborMock
-console.log(new MazeGenerator().generate());
+console.log(new MazeGenerator().printMaze());

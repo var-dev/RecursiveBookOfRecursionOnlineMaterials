@@ -1,4 +1,4 @@
-import { describe, test } from "node:test";
+import { describe, test, mock } from "node:test";
 import * as assert from "node:assert/strict";
 
 import { getNextUnvisitedNeighborMock } from './nextUnvisitedNeighborMock.js'
@@ -27,9 +27,10 @@ const expected =
 `
 
 describe("Maze Generator Snapshot Test", () => {
+  const mocked = mock.method(MazeGenerator.prototype, 'getNextUnvisitedNeighbor', getNextUnvisitedNeighborMock)
   const aMaze = new MazeGenerator();
-  aMaze.getNextUnvisitedNeighbor = getNextUnvisitedNeighborMock
   test("previously recorded mock should generate expected maze", () => {
-    assert.strictEqual(aMaze.generate(), expected);
+    assert.strictEqual(aMaze.printMaze(), expected);
+    assert.strictEqual(mocked.mock.callCount(), 170)
   })
 })
