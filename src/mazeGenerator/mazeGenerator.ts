@@ -38,6 +38,9 @@ function getXyFromIndex(i: number){
   return [i % WIDTH, Math.floor(i / WIDTH)]
 }
 
+function getIndexFromXy(x: number, y: number){
+  return y * WIDTH + x
+}
 
 function createMaze() {
   let maze: Maze = new Map();
