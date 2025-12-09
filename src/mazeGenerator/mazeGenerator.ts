@@ -31,8 +31,10 @@ enum NeighborToThe {
 }
 
 
-// Create the filled-in maze data structure to start:
-
+function arraysEqual(a: any[], b: any[]) {
+  if (a.length !== b.length) return false;
+  return a.every((val, i) => val === b[i]);
+}
 
 function getXyFromIndex(i: number){
   return [i % WIDTH, Math.floor(i / WIDTH)]
@@ -152,7 +154,7 @@ export class MazeGenerator{
   }
 
   private isNeighborAtVisited(coordinates: Coordinates) {
-    return JSON.stringify(this.hasVisited).includes(JSON.stringify(coordinates));
+    return this.hasVisited.some((c: Coordinates) => arraysEqual(c, coordinates));
   }
 }
 
