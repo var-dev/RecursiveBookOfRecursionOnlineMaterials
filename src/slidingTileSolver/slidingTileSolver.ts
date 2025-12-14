@@ -10,18 +10,22 @@ const RIGHT = "right";
 
 function displayBoard(board) {
     // Display the tiles stored in `board` on the screen.
-    document.write("<pre>");
+    // document.write("<pre>");
+    let output = '';
     for (let y = 0; y < SIZE; y++) {  // Iterate over each row.
         for (let x = 0; x < SIZE; x++) {  // Iterate over each column.
             if (board[y * SIZE + x] == BLANK) {
-                document.write('__ ');  // Display blank tile.
+                // document.write('__ ');  // Display blank tile.
+                output += '__ ';
             } else {
-                document.write(board[y * SIZE + x].toString().padStart(2) + " ");
+                // document.write(board[y * SIZE + x].toString().padStart(2) + " ");
+                output += board[y * SIZE + x].toString().padStart(2) + " ";
             }
         }
-        document.write("<br />");  // Print a newline at the end of the row.
+        // document.write("<br />");  // Print a newline at the end of the row.
+        output += "\n";
     }
-    document.write("</pre>");
+    console.log(output)
 }
 
 
@@ -125,21 +129,21 @@ function getNewPuzzle() {
 function solve(board, maxMoves) {
     // Attempt to solve the puzzle in `board` in at most `maxMoves`
     // moves. Returns true if solved, otherwise false.
-    document.write("Attempting to solve in at most " + maxMoves + " moves...<br />");
+    console.log("Attempting to solve in at most " + maxMoves + " moves...\n");
     let solutionMoves = [];  // A list of UP, DOWN, LEFT, RIGHT values.
     let solved = attemptMove(board, solutionMoves, maxMoves, null);
 
     if (solved) {
         displayBoard(board);
         for (let move of solutionMoves) {
-            document.write("Move " + move + "<br />");
+            console.log("Move " + move + "\n");
             makeMove(board, move);
-            document.write("<br />");  // Print a newline.
+            console.log("\n");  // Print a newline.
             displayBoard(board);
-            document.write("<br />");  // Print a newline.
+            console.log("\n");  // Print a newline.
         }
-        document.write("Solved in " + solutionMoves.length + " moves:<br />");
-        document.write(solutionMoves.join(", ") + "<br />");
+        console.log("Solved in " + solutionMoves.length + " moves:\n");
+        console.log(solutionMoves.join(", ") + "\n");
         return true;  // Puzzle was solved.
     } else {
         return false;  // Unable to solve in maxMoves moves.
@@ -197,5 +201,5 @@ while (true) {
     }
     maxMoves += 1;
 }
-document.write("Run in " + Math.round((Date.now() - startTime) / 100) / 10 + " seconds.<br />");
+console.log("Run in " + Math.round((Date.now() - startTime) / 100) / 10 + " seconds.\n");
 
