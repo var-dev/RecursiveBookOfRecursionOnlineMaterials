@@ -126,7 +126,7 @@ function getNewPuzzle() {
     return board;
 }
 
-function solve(board, maxMoves) {
+export function solve(board, maxMoves) {
     // Attempt to solve the puzzle in `board` in at most `maxMoves`
     // moves. Returns true if solved, otherwise false.
     console.log("Attempting to solve in at most " + maxMoves + " moves...\n");
@@ -190,7 +190,9 @@ function attemptMove(board, movesMade, movesRemaining, prevMove) {
 
 // Start the program:
 const SOLVED_BOARD = JSON.stringify(getNewBoard());
+console.log("SOLVED_BOARD: \n" + SOLVED_BOARD + "\n");
 let puzzleBoard = getNewPuzzle();
+console.log("PUZZLE:\n", JSON.stringify(puzzleBoard));
 displayBoard(puzzleBoard);
 let startTime = Date.now();
 
