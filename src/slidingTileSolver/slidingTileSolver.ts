@@ -7,8 +7,11 @@ const DOWN = "down";
 const LEFT = "left";
 const RIGHT = "right";
 
+type Board =  number[];
+type Move = typeof UP | typeof DOWN | typeof LEFT | typeof RIGHT;
 
-function displayBoard(board) {
+
+function displayBoard(board: Board) {
     // Display the tiles stored in `board` on the screen.
     // document.write("<pre>");
     let output = '';
@@ -19,7 +22,7 @@ function displayBoard(board) {
                 output += '__ ';
             } else {
                 // document.write(board[y * SIZE + x].toString().padStart(2) + " ");
-                output += board[y * SIZE + x].toString().padStart(2) + " ";
+                output += board[y * SIZE + x]!.toString().padStart(2) + " ";
             }
         }
         // document.write("<br />");  // Print a newline at the end of the row.
@@ -40,7 +43,7 @@ function getNewBoard() {
 }
 
 
-function findBlankSpace(board) {
+function findBlankSpace(board: Board): [number, number] | void {
     // Return an [x, y] array of the blank space's location.
     for (let x = 0; x < SIZE; x++) {
         for (let y = 0; y < SIZE; y++) {
@@ -52,13 +55,13 @@ function findBlankSpace(board) {
 }
 
 
-function makeMove(board, move) {
+function makeMove(board: Board, move: Move) {
     // Modify `board` in place to carry out the slide in `move`.
     let bx, by;
-    [bx, by] = findBlankSpace(board);
+    [bx, by] = findBlankSpace(board) as [number, number];
     let blankIndex = by * SIZE + bx;
 
-    let tileIndex;
+    let tileIndex: number = -1;
     if (move === UP) {
         tileIndex = (by + 1) * SIZE + bx;
     } else if (move === LEFT) {
@@ -70,11 +73,11 @@ function makeMove(board, move) {
     }
 
     // Swap the tiles at blankIndex and tileIndex:
-    [board[blankIndex], board[tileIndex]] = [board[tileIndex], board[blankIndex]];
+    [board[blankIndex], board[tileIndex]] = [(board[tileIndex] as number), (board[blankIndex] as number)];
 }
 
 
-function undoMove(board, move) {
+function undoMove(board: Board, move: Move) {
     // Do the opposite move of `move` to undo it on `board`.
     if (move === UP) {
         makeMove(board, DOWN);
@@ -88,14 +91,14 @@ function undoMove(board, move) {
 }
 
 
-function getValidMoves(board, prevMove) {
+function getValidMoves(board: Board, prevMove?: Move): Move[] {
     // Returns a list of the valid moves to make on this board. If
     // prevMove is provided, do not include the move that would undo it.
 
     let blankx, blanky;
-    [blankx, blanky] = findBlankSpace(board);
+    [blankx, blanky] = findBlankSpace(board) as [number, number];
 
-    let validMoves = [];
+    let validMoves: Move[] = [];
     if (blanky != SIZE - 1 && prevMove != DOWN) {
         // Blank space is not on the bottom row.
         validMoves.push(UP);
@@ -121,17 +124,17 @@ function getNewPuzzle() {
     let board = getNewBoard();
     for (let i = 0; i < DIFFICULTY; i++) {
         let validMoves = getValidMoves(board);
-        makeMove(board, validMoves[Math.floor(Math.random() * validMoves.length)]);
+        makeMove(board, (validMoves[Math.floor(Math.random() * validMoves.length)] as Move));
     }
     return board;
 }
 
-export function solve(board, maxMoves) {
+export function solve(board: Board, maxMoves: number) {
     // Attempt to solve the puzzle in `board` in at most `maxMoves`
     // moves. Returns true if solved, otherwise false.
     console.log("Attempting to solve in at most " + maxMoves + " moves...\n");
-    let solutionMoves = [];  // A list of UP, DOWN, LEFT, RIGHT values.
-    let solved = attemptMove(board, solutionMoves, maxMoves, null);
+    let solutionMoves: Array<Move> = [];  // A list of UP, DOWN, LEFT, RIGHT values.
+    let solved = attemptMove(board, solutionMoves, maxMoves, null as unknown as Move);
 
     if (solved) {
         displayBoard(board);
@@ -151,7 +154,7 @@ export function solve(board, maxMoves) {
 }
 
 
-function attemptMove(board, movesMade, movesRemaining, prevMove) {
+function attemptMove(board: Board, movesMade: Move[], movesRemaining: number, prevMove: Move) {
     // A recursive function that attempts all possible moves on `board`
     // until it finds a solution or reaches the `maxMoves` limit.
     // Returns true if a solution was found, in which case `movesMade`
